@@ -1,0 +1,7 @@
+project_id = "wyimcthnhxwsdombgmiv"
+
+[functions.generate-case]
+verify_jwt = false
+
+[functions.socratic-prompt]
+verify_jwt = false

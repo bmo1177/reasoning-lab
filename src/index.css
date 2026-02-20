@@ -1,0 +1,337 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Figtree:wght@300;400;500;600;700&family=Noto+Sans:wght@300;400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Think Studio — Design System Tokens
+   Clinical/Medical palette: calm, trustworthy, accessible
+   ============================================================ */
+
+@layer base {
+  :root {
+    /* Base — soft cyan-tinted background for glassmorphism depth */
+    --background: 185 100% 96%;
+    --foreground: 196 63% 24%;
+
+    /* Cards — translucent white for glass effect */
+    --card: 0 0% 100%;
+    --card-foreground: 196 63% 24%;
+
+    /* Popovers */
+    --popover: 0 0% 100%;
+    --popover-foreground: 196 63% 24%;
+
+    /* Primary — Medical teal — trustworthy, calming */
+    --primary: 192 91% 36%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary — Light cyan surface */
+    --secondary: 185 96% 90%;
+    --secondary-foreground: 196 63% 24%;
+
+    /* Muted — Subtle cool gray */
+    --muted: 186 40% 93%;
+    --muted-foreground: 196 20% 46%;
+
+    /* Accent — Soft teal tint */
+    --accent: 185 70% 90%;
+    --accent-foreground: 192 91% 28%;
+
+    /* Destructive — Soft coral red */
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Clinical status colors */
+    --success: 160 84% 39%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 38 92% 15%;
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+
+    /* Connection/reasoning colors */
+    --supports-strong: 160 60% 45%;
+    --supports-weak: 160 40% 65%;
+    --contradicts: 0 60% 55%;
+    --neutral: 200 20% 60%;
+
+    /* Borders and inputs — translucent for glass */
+    --border: 186 30% 86%;
+    --input: 186 30% 86%;
+    --ring: 192 91% 36%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar */
+    --sidebar-background: 185 60% 97%;
+    --sidebar-foreground: 196 50% 25%;
+    --sidebar-primary: 192 91% 36%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 185 70% 90%;
+    --sidebar-accent-foreground: 192 91% 28%;
+    --sidebar-border: 186 30% 90%;
+    --sidebar-ring: 192 91% 36%;
+
+    /* Canvas specific */
+    --canvas-background: 185 50% 97%;
+    --canvas-grid: 186 30% 92%;
+    --node-symptom: 199 89% 48%;
+    --node-diagnosis: 192 91% 36%;
+    --node-test: 38 80% 55%;
+    --node-finding: 280 50% 55%;
+  }
+
+  .dark {
+    --background: 200 50% 6%;
+    --foreground: 185 40% 92%;
+
+    --card: 200 40% 10%;
+    --card-foreground: 185 40% 92%;
+
+    --popover: 200 40% 10%;
+    --popover-foreground: 185 40% 92%;
+
+    --primary: 192 80% 45%;
+    --primary-foreground: 200 50% 6%;
+
+    --secondary: 192 30% 16%;
+    --secondary-foreground: 185 40% 85%;
+
+    --muted: 200 30% 16%;
+    --muted-foreground: 185 15% 55%;
+
+    --accent: 192 35% 18%;
+    --accent-foreground: 192 50% 80%;
+
+    --destructive: 0 55% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 160 70% 35%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 85% 45%;
+    --warning-foreground: 0 0% 100%;
+    --info: 199 80% 45%;
+    --info-foreground: 0 0% 100%;
+
+    --supports-strong: 160 55% 40%;
+    --supports-weak: 160 35% 55%;
+    --contradicts: 0 55% 50%;
+    --neutral: 200 15% 50%;
+
+    --border: 200 30% 18%;
+    --input: 200 30% 18%;
+    --ring: 192 80% 45%;
+
+    --sidebar-background: 200 40% 8%;
+    --sidebar-foreground: 185 30% 88%;
+    --sidebar-primary: 192 80% 45%;
+    --sidebar-primary-foreground: 200 50% 6%;
+    --sidebar-accent: 192 30% 16%;
+    --sidebar-accent-foreground: 192 50% 80%;
+    --sidebar-border: 200 30% 16%;
+    --sidebar-ring: 192 80% 45%;
+
+    --canvas-background: 200 40% 8%;
+    --canvas-grid: 200 30% 14%;
+    --node-symptom: 199 80% 45%;
+    --node-diagnosis: 192 70% 40%;
+    --node-test: 38 75% 50%;
+    --node-finding: 280 45% 50%;
+  }
+}
+
+/* ============================================================
+   Base Resets & Defaults
+   ============================================================ */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Accessible focus ring — visible for keyboard, hidden for mouse */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Custom scrollbar — clinical feel */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted/50 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/30;
+  }
+}
+
+/* ============================================================
+   Reduced-Motion Support
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   Reusable Component Classes
+   ============================================================ */
+
+@layer components {
+
+  /* Glass card — frosted glass effect for both light & dark */
+  .glass-card {
+    @apply bg-card/70 backdrop-blur-xl rounded-xl shadow-sm;
+    @apply transition-all duration-200;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+  }
+
+  .glass-card:hover {
+    @apply shadow-md;
+    border-color: hsl(var(--primary) / 0.25);
+  }
+
+  /* Clinical card styles */
+  .clinical-card {
+    @apply bg-card rounded-lg border shadow-sm transition-all duration-200;
+  }
+
+  .clinical-card:hover {
+    @apply shadow-md border-primary/20;
+  }
+
+  /* Gradient text utility */
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+  }
+
+  /* Entrance animation with reduced-motion fallback */
+  .animate-in {
+    animation: fadeInUp 0.4s ease-out both;
+  }
+
+  /* Status badges */
+  .badge-specialty {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary;
+  }
+
+  .badge-difficulty-beginner {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success;
+  }
+
+  .badge-difficulty-intermediate {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning/10 text-warning;
+  }
+
+  .badge-difficulty-advanced {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-destructive/10 text-destructive;
+  }
+
+  /* Skeleton pulse for loading states */
+  .skeleton {
+    @apply bg-muted animate-pulse rounded-md;
+  }
+}
+
+/* ============================================================
+   Keyframes
+   ============================================================ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   React Flow Customization
+   ============================================================ */
+
+.react-flow__background {
+  background-color: hsl(var(--canvas-background)) !important;
+}
+
+.react-flow__minimap {
+  background-color: hsl(var(--card)) !important;
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+}
+
+.react-flow__controls {
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+.react-flow__controls-button {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+  fill: hsl(var(--foreground)) !important;
+}
+
+.react-flow__controls-button:hover {
+  background-color: hsl(var(--accent)) !important;
+}
+
+/* ============================================================
+   Print Styles
+   ============================================================ */
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #printable-case,
+  #printable-case * {
+    visibility: visible;
+  }
+
+  #printable-case {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    display: block !important;
+  }
+}
+
+/* ============================================================
+   Mobile Responsive
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .react-flow__minimap {
+    display: none;
+  }
+}
