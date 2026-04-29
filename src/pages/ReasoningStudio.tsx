@@ -11,7 +11,7 @@ import { CasePanel } from '@/components/studio/CasePanel';
 import { ThinkAloudPanel } from '@/components/studio/ThinkAloudPanel';
 import { SocraticPrompt } from '@/components/studio/SocraticPrompt';
 import { OnboardingTour } from '@/components/studio/OnboardingTour';
-import { ProgressIndicator } from '@/components/studio/ProgressIndicator';
+
 import { ExportMenu } from '@/components/canvas/ExportMenu';
 import { ModeToggle } from '@/components/mode-toggle';
 import { ComparisonView } from '@/components/comparison/ComparisonView';
@@ -376,16 +376,7 @@ export default function ReasoningStudio() {
             )}
             {activePanel === 'canvas' && (
               <div className="h-full relative flex flex-col">
-                {/* Progress Indicator */}
-                {!showOnboarding && (
-                  <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 w-[90%] max-w-lg">
-                    <ProgressIndicator 
-                      nodes={currentNodesForPrompt}
-                      connections={studentMap.connections.length}
-                    />
-                  </div>
-                )}
-                
+
                 <div className="flex-1 relative">
                   <ReasoningCanvas 
                     caseId={clinicalCase.id} 
@@ -418,15 +409,7 @@ export default function ReasoningStudio() {
         ) : focusMode ? (
           // Focus Mode - Canvas only
           <div className="h-full relative flex flex-col">
-            {/* Progress Indicator - Hidden in focus mode for cleaner view */}
-            {!showOnboarding && (
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 w-[90%] max-w-lg opacity-0 hover:opacity-100 transition-opacity">
-                <ProgressIndicator 
-                  nodes={currentNodesForPrompt}
-                  connections={studentMap.connections.length}
-                />
-              </div>
-            )}
+
             
             <div className="flex-1 relative">
               <ReasoningCanvas 
@@ -465,16 +448,7 @@ export default function ReasoningStudio() {
             {/* Canvas */}
             <ResizablePanel defaultSize={56} minSize={35}>
               <div className="h-full relative flex flex-col">
-                {/* Progress Indicator */}
-                {!showOnboarding && (
-                  <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 w-[90%] max-w-lg">
-                    <ProgressIndicator 
-                      nodes={currentNodesForPrompt}
-                      connections={studentMap.connections.length}
-                    />
-                  </div>
-                )}
-                
+
                 <div className="flex-1 relative">
                   <ReasoningCanvas 
                     caseId={clinicalCase.id} 
