@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { cn } from '@/lib/utils';
 import { ReasoningNodeType } from '@/types/case';
@@ -13,6 +13,8 @@ import {
   CheckCircle2,
   ShieldAlert,
   AlertTriangle,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
 
 const nodeIcons: Record<ReasoningNodeType, React.ElementType> = {
@@ -61,6 +63,9 @@ interface NodeData {
 function ReasoningNodeComponent({ data, selected }: NodeProps) {
   const nodeData = data as unknown as NodeData;
   const Icon = nodeIcons[nodeData.nodeType];
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  
+  const hasDetails = !!nodeData.description || (nodeData.confidence !== undefined && nodeData.nodeType === 'diagnosis');
 
   return (
     <>
@@ -75,37 +80,52 @@ function ReasoningNodeComponent({ data, selected }: NodeProps) {
           nodeStyles[nodeData.nodeType],
           selected && 'ring-2 ring-primary ring-offset-2'
         )}
+        onDoubleClick={() => hasDetails && setIsCollapsed(!isCollapsed)}
       >
         <div className="absolute -top-1 -left-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab">
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </div>
+        
+        {hasDetails && (
+          <button 
+            onClick={(e) => { e.stopPropagation(); setIsCollapsed(!isCollapsed); }}
+            className="absolute -top-2 -right-2 p-1 rounded-full bg-background border shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-muted"
+            title={isCollapsed ? "Expand details" : "Collapse details"}
+          >
+            {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+          </button>
+        )}
         
         <div className="flex items-start gap-2">
           <div className={cn('rounded-md p-1.5', iconStyles[nodeData.nodeType])}>
             <Icon className="h-4 w-4" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm leading-tight text-foreground">
+            <p className="font-medium text-sm leading-tight text-foreground select-none">
               {nodeData.label}
             </p>
-            {nodeData.description && (
-              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                {nodeData.description}
-              </p>
-            )}
-            {nodeData.confidence !== undefined && nodeData.nodeType === 'diagnosis' && (
-              <div className="mt-2">
-                <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="text-muted-foreground">Confidence</span>
-                  <span className="font-medium">{nodeData.confidence}%</span>
-                </div>
-                <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-node-diagnosis rounded-full transition-all"
-                    style={{ width: `${nodeData.confidence}%` }}
-                  />
-                </div>
-              </div>
+            {!isCollapsed && (
+              <>
+                {nodeData.description && (
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                    {nodeData.description}
+                  </p>
+                )}
+                {nodeData.confidence !== undefined && nodeData.nodeType === 'diagnosis' && (
+                  <div className="mt-2">
+                    <div className="flex items-center justify-between text-xs mb-1">
+                      <span className="text-muted-foreground">Confidence</span>
+                      <span className="font-medium">{nodeData.confidence}%</span>
+                    </div>
+                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-node-diagnosis rounded-full transition-all"
+                        style={{ width: `${nodeData.confidence}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

@@ -1,4 +1,12 @@
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from '@/components/ui/dropdown-menu';
 import { ReasoningNodeType } from '@/types/case';
 import {
   Stethoscope,
@@ -18,6 +26,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   ShieldAlert,
+  Plus,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -74,45 +83,41 @@ export function CanvasToolbar({
       <div className="absolute left-4 top-4 z-30 flex flex-col gap-2">
         {/* Node tools */}
         <div className="flex flex-col gap-1 rounded-lg border bg-card p-1.5 shadow-lg">
-          {nodeTools.slice(0, 5).map(({ type, icon: Icon, label, color, shortcut }) => (
-            <Tooltip key={type}>
+          <DropdownMenu>
+            <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={cn('h-8 w-8', color)}
-                  onClick={() => onAddNode(type)}
-                >
-                  <Icon className="h-4 w-4" />
-                </Button>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 bg-primary/10 text-primary hover:bg-primary/20">
+                    <Plus className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
               </TooltipTrigger>
-              <TooltipContent side="right">
-                Add {label} Node
-                <span className="block text-xs text-muted-foreground mt-0.5">Press '{shortcut}'</span>
-              </TooltipContent>
+              <TooltipContent side="right">Add Node</TooltipContent>
             </Tooltip>
-          ))}
-          
-          <div className="w-full h-px bg-border my-0.5" />
-          
-          {nodeTools.slice(5).map(({ type, icon: Icon, label, color, shortcut }) => (
-            <Tooltip key={type}>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={cn('h-8 w-8 opacity-70 hover:opacity-100', color)}
-                  onClick={() => onAddNode(type)}
-                >
-                  <Icon className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                Add {label} Node
-                <span className="block text-xs text-muted-foreground mt-0.5">Press '{shortcut}'</span>
-              </TooltipContent>
-            </Tooltip>
-          ))}
+            <DropdownMenuContent side="right" align="start" className="w-48">
+              <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">
+                Clinical Data
+              </DropdownMenuLabel>
+              {nodeTools.slice(0, 4).map(({ type, icon: Icon, label, color, shortcut }) => (
+                <DropdownMenuItem key={type} onClick={() => onAddNode(type)} className="cursor-pointer">
+                  <Icon className={cn("mr-2 h-4 w-4", color)} />
+                  <span className="flex-1">{label}</span>
+                  <span className="text-xs text-muted-foreground">{shortcut}</span>
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">
+                Reasoning & Outcomes
+              </DropdownMenuLabel>
+              {nodeTools.slice(4).map(({ type, icon: Icon, label, color, shortcut }) => (
+                <DropdownMenuItem key={type} onClick={() => onAddNode(type)} className="cursor-pointer">
+                  <Icon className={cn("mr-2 h-4 w-4", color)} />
+                  <span className="flex-1">{label}</span>
+                  <span className="text-xs text-muted-foreground">{shortcut}</span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Canvas controls */}
