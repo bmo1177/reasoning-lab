@@ -20,6 +20,12 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/components/ui/resizable';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { ClinicalCase, ReasoningMap } from '@/types/case';
 import { Node, Edge } from '@xyflow/react';
 
@@ -216,79 +222,111 @@ export default function ReasoningStudio() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Focus Mode Toggle */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-2"
-            onClick={() => setFocusMode(!focusMode)}
-          >
-            {focusMode ? (
-              <>
-                <Minimize2 className="h-4 w-4" />
-                <span className="hidden sm:inline">Exit Focus</span>
-              </>
-            ) : (
-              <>
-                <Maximize2 className="h-4 w-4" />
-                <span className="hidden sm:inline">Focus Mode</span>
-              </>
+        <TooltipProvider>
+          <div className="flex items-center gap-2">
+            {/* Primary Actions (Canvas specific) */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => setFocusMode(!focusMode)}
+                >
+                  {focusMode ? (
+                    <>
+                      <Minimize2 className="h-4 w-4" />
+                      <span className="hidden sm:inline">Exit Focus</span>
+                    </>
+                  ) : (
+                    <>
+                      <Maximize2 className="h-4 w-4" />
+                      <span className="hidden sm:inline">Focus Mode</span>
+                    </>
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{focusMode ? 'Exit focus mode' : 'Focus on canvas'}</p>
+              </TooltipContent>
+            </Tooltip>
+
+            {/* Compare button - only show if expert map exists */}
+            {clinicalCase.expertReasoningMap && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                    onClick={() => setShowComparison(true)}
+                  >
+                    <GitCompare className="h-4 w-4" />
+                    <span className="hidden sm:inline">Compare</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Compare with Expert Map</p>
+                </TooltipContent>
+              </Tooltip>
             )}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-2"
-            onClick={handlePrintCase}
-          >
-            <Printer className="h-4 w-4" />
-            <span className="hidden sm:inline">Print</span>
-          </Button>
-          {/* AI Analysis button - prominent placement */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 border-primary/50 hover:bg-primary/10 relative"
-            onClick={() => {
-              setShowGraphIntelligence(true);
-              if (!hasSeenGraphIntelligence) {
-                setHasSeenGraphIntelligence(true);
-                localStorage.setItem('has-seen-graph-intelligence', 'true');
-              }
-            }}
-          >
-            <Brain className="h-4 w-4 text-primary" />
-            <span className="hidden sm:inline">AI Analysis</span>
-            {!hasSeenGraphIntelligence && canvasNodes.length > 2 && (
-              <span className="absolute -top-1 -right-1 h-2.5 w-2.5 bg-red-500 rounded-full animate-pulse" />
-            )}
-          </Button>
-          {/* Compare button - only show if expert map exists */}
-          {clinicalCase.expertReasoningMap && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() => setShowComparison(true)}
-            >
-              <GitCompare className="h-4 w-4" />
-              <span className="hidden sm:inline">Compare with Expert</span>
-            </Button>
-          )}
-          
-          <div className="h-6 w-px bg-border mx-1" />
-          
-          {/* Export Menu */}
-          <ExportMenu 
-            caseId={clinicalCase.id}
-            caseTitle={clinicalCase.title}
-            reasoningMap={studentMap}
-          />
-          
-          {/* Dark Mode Toggle */}
-          <ModeToggle />
-        </div>
+
+            {/* AI Analysis button */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 relative"
+                  onClick={() => {
+                    setShowGraphIntelligence(true);
+                    if (!hasSeenGraphIntelligence) {
+                      setHasSeenGraphIntelligence(true);
+                      localStorage.setItem('has-seen-graph-intelligence', 'true');
+                    }
+                  }}
+                >
+                  <Brain className="h-4 w-4 text-primary" />
+                  <span className="hidden sm:inline">AI Analysis</span>
+                  {!hasSeenGraphIntelligence && canvasNodes.length > 2 && (
+                    <span className="absolute -top-1 -right-1 h-2.5 w-2.5 bg-red-500 rounded-full animate-pulse" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Analyze reasoning graph</p>
+              </TooltipContent>
+            </Tooltip>
+            
+            <div className="h-6 w-px bg-border mx-1" />
+            
+            {/* Secondary Actions */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2"
+                  onClick={handlePrintCase}
+                >
+                  <Printer className="h-4 w-4" />
+                  <span className="hidden sm:inline">Print</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Print case</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <ExportMenu 
+              caseId={clinicalCase.id}
+              caseTitle={clinicalCase.title}
+              reasoningMap={studentMap}
+            />
+            
+            <ModeToggle />
+          </div>
+        </TooltipProvider>
       </header>
 
       {/* Mobile Tab Navigation - Hidden in Focus Mode */}
@@ -339,12 +377,14 @@ export default function ReasoningStudio() {
             {activePanel === 'canvas' && (
               <div className="h-full relative flex flex-col">
                 {/* Progress Indicator */}
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 w-[90%] max-w-lg">
-                  <ProgressIndicator 
-                    nodes={currentNodesForPrompt}
-                    connections={studentMap.connections.length}
-                  />
-                </div>
+                {!showOnboarding && (
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 w-[90%] max-w-lg">
+                    <ProgressIndicator 
+                      nodes={currentNodesForPrompt}
+                      connections={studentMap.connections.length}
+                    />
+                  </div>
+                )}
                 
                 <div className="flex-1 relative">
                   <ReasoningCanvas 
@@ -379,12 +419,14 @@ export default function ReasoningStudio() {
           // Focus Mode - Canvas only
           <div className="h-full relative flex flex-col">
             {/* Progress Indicator - Hidden in focus mode for cleaner view */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 w-[90%] max-w-lg opacity-0 hover:opacity-100 transition-opacity">
-              <ProgressIndicator 
-                nodes={currentNodesForPrompt}
-                connections={studentMap.connections.length}
-              />
-            </div>
+            {!showOnboarding && (
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 w-[90%] max-w-lg opacity-0 hover:opacity-100 transition-opacity">
+                <ProgressIndicator 
+                  nodes={currentNodesForPrompt}
+                  connections={studentMap.connections.length}
+                />
+              </div>
+            )}
             
             <div className="flex-1 relative">
               <ReasoningCanvas 
@@ -412,7 +454,7 @@ export default function ReasoningStudio() {
           // Desktop Layout - Three panel view
           <ResizablePanelGroup direction="horizontal" className="h-full">
             {/* Case panel */}
-            <ResizablePanel defaultSize={25} minSize={20} maxSize={40}>
+            <ResizablePanel defaultSize={22} minSize={20} maxSize={40}>
               <div className="h-full border-r bg-card">
                 <CasePanel clinicalCase={clinicalCase} onTestOrdered={handleTestOrdered} />
               </div>
@@ -421,15 +463,17 @@ export default function ReasoningStudio() {
             <ResizableHandle withHandle />
 
             {/* Canvas */}
-            <ResizablePanel defaultSize={50} minSize={35}>
+            <ResizablePanel defaultSize={56} minSize={35}>
               <div className="h-full relative flex flex-col">
                 {/* Progress Indicator */}
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 w-[90%] max-w-lg">
-                  <ProgressIndicator 
-                    nodes={currentNodesForPrompt}
-                    connections={studentMap.connections.length}
-                  />
-                </div>
+                {!showOnboarding && (
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 w-[90%] max-w-lg">
+                    <ProgressIndicator 
+                      nodes={currentNodesForPrompt}
+                      connections={studentMap.connections.length}
+                    />
+                  </div>
+                )}
                 
                 <div className="flex-1 relative">
                   <ReasoningCanvas 
@@ -460,7 +504,7 @@ export default function ReasoningStudio() {
             <ResizableHandle withHandle />
 
             {/* Think-aloud panel */}
-            <ResizablePanel defaultSize={25} minSize={20} maxSize={40}>
+            <ResizablePanel defaultSize={22} minSize={20} maxSize={40}>
               <div className="h-full border-l bg-card">
                 <ThinkAloudPanel caseId={clinicalCase.id} />
               </div>

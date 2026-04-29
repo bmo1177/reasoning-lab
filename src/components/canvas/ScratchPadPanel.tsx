@@ -23,7 +23,7 @@ interface ScratchPadPanelProps {
 export function ScratchPadPanel({ caseId, embedded }: ScratchPadPanelProps) {
   const [pads, setPads] = useState<ScratchPad[]>([]);
   const [activePadId, setActivePadId] = useState<string | null>(null);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   // Load from localStorage
   useEffect(() => {
@@ -65,9 +65,24 @@ export function ScratchPadPanel({ caseId, embedded }: ScratchPadPanelProps) {
 
   const activePad = pads.find(p => p.id === activePadId);
 
+  if (isCollapsed && pads.length === 0 && !embedded) {
+    return (
+      <div className="absolute right-4 bottom-4 z-40">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setIsCollapsed(false)}
+          className="rounded-full shadow-md bg-card w-10 h-10 border-primary/20 hover:border-primary/50"
+        >
+          <PenLine className="h-4 w-4 text-primary" />
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className={cn(
-      embedded ? 'w-full h-full' : 'absolute right-4 bottom-4 z-10 w-72'
+      embedded ? 'w-full h-full' : 'absolute right-4 bottom-4 z-40 w-72'
     )}>
       <div className={cn(
         'overflow-hidden',

@@ -103,10 +103,6 @@ export function generateRuleBasedScenarios(
     }));
 }
 
-/**
- * Generate LLM-enhanced scenarios asynchronously.
- * Falls back silently if the Edge Function is unavailable.
- */
 export async function generateLLMScenarios(
     decision: SimulationDecision,
     context: QuestionContext,
@@ -117,31 +113,25 @@ export async function generateLLMScenarios(
     if (cached) return cached;
 
     try {
-        const { data, error } = await supabase.functions.invoke('eca-chat', {
-            body: {
-                message: buildLLMPrompt(decision, context, existingScenarios),
-                conversationHistory: [],
-                context: {
-                    caseTitle: context.caseData.title,
-                    specialty: context.caseData.specialty,
-                    currentStage: context.currentStage.name || context.currentStage.id,
-                    patientStatus: context.patientState.status,
-                    vitalSigns: context.patientState.vitalSigns,
-                    recentDecisions: context.decisionsLog.slice(-5).map(d => d.decision.label),
-                    errorsDetected: [],
-                    hintLevel: 0,
-                    decisionsCount: context.decisionsLog.length,
-                    timeElapsed: context.patientState.timeElapsed,
-                },
-                sessionId: context.sessionId,
-            },
-        });
+        const userPrompt = buildLLMPrompt(decision, context, existingScenarios);
+        const systemPrompt = `You are a clinical reasoning tutor embedded in a medical simulation. Your name is "Clinical Tutor."
 
-        if (error) {
-            console.warn('LLM scenario generation failed, using rule-based only:', error);
-            return existingScenarios;
-        }
+CASE CONTEXT:
+- Case: ${context.caseData.title} (${context.caseData.specialty})
+- Current Stage: ${context.currentStage.name || context.currentStage.id}
+- Patient Status: ${context.patientState.status}
+- Vital Signs: BP ${context.patientState.vitalSigns.bloodPressure}, HR ${context.patientState.vitalSigns.heartRate}, RR ${context.patientState.vitalSigns.respiratoryRate}, Temp ${context.patientState.vitalSigns.temperature}°C, SpO₂ ${context.patientState.vitalSigns.oxygenSaturation}%
+- Recent Decisions: ${context.decisionsLog.slice(-5).map(d => d.decision.label).join(", ") || "None yet"}
+- Errors Detected: None
+- Hint Level: 0/3
+- Decisions Made: ${context.decisionsLog.length}
+- Time Elapsed: ${Math.round(context.patientState.timeElapsed / 60)} minutes`;
 
+        const { generateGeminiContent, parseJSONResponse } = await import('@/services/geminiService');
+        const content = await generateGeminiContent(systemPrompt, userPrompt);
+        
+        let data: any = { response: content };
+        
         // Parse LLM response
         const llmScenarios = parseLLMResponse(data, decision, existingScenarios);
         const combined = mergeScenarios(existingScenarios, llmScenarios);

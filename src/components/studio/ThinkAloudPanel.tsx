@@ -106,18 +106,19 @@ export function ThinkAloudPanel({ caseId, onNotesChange }: ThinkAloudPanelProps)
         </p>
       </div>
 
-      {/* Notes list */}
+      {/* Empty state or Notes list */}
       <ScrollArea className="flex-1 p-4" ref={scrollRef}>
         <AnimatePresence mode="popLayout">
           {notes.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center py-8"
+              className="text-center py-6"
             >
-              <Lightbulb className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">
-                No notes yet. Start documenting your thinking!
+              <Lightbulb className="h-6 w-6 text-muted-foreground/50 mx-auto mb-2" />
+              <p className="text-sm font-medium">No notes yet</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Use the box below to start documenting your thinking process.
               </p>
             </motion.div>
           ) : (
@@ -154,28 +155,6 @@ export function ThinkAloudPanel({ caseId, onNotesChange }: ThinkAloudPanelProps)
         </AnimatePresence>
       </ScrollArea>
 
-      {/* Prompt suggestion */}
-      <AnimatePresence>
-        {showPrompt && notes.length < 3 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="px-4"
-          >
-            <div className="flex items-start gap-2 p-3 rounded-lg bg-primary/5 border border-primary/10 mb-3">
-              <Lightbulb className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-              <div>
-                <p className="text-xs font-medium text-primary">Thinking prompt:</p>
-                <p className="text-sm text-muted-foreground">
-                  {promptSuggestions[currentPromptIndex]}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Input area */}
       <div className="p-4 border-t">
         <div className="relative">
@@ -183,7 +162,7 @@ export function ThinkAloudPanel({ caseId, onNotesChange }: ThinkAloudPanelProps)
             value={currentNote}
             onChange={(e) => setCurrentNote(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="What are you thinking right now?"
+            placeholder={showPrompt && notes.length < 3 ? promptSuggestions[currentPromptIndex] : "What are you thinking right now?"}
             className="min-h-[80px] pr-12 resize-none"
           />
           <Button

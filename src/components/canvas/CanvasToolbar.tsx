@@ -71,24 +71,40 @@ export function CanvasToolbar({
 }: CanvasToolbarProps) {
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="absolute left-4 top-4 z-10 flex flex-col gap-2">
+      <div className="absolute left-4 top-4 z-30 flex flex-col gap-2">
         {/* Node tools */}
         <div className="flex flex-col gap-1 rounded-lg border bg-card p-1.5 shadow-lg">
-          <span className="px-2 py-1 text-xs font-medium text-muted-foreground">Add Node</span>
-          {nodeTools.map(({ type, icon: Icon, label, color, shortcut }) => (
+          {nodeTools.slice(0, 5).map(({ type, icon: Icon, label, color, shortcut }) => (
             <Tooltip key={type}>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
-                  size="sm"
-                  className={cn('justify-start gap-2 group', color)}
+                  size="icon"
+                  className={cn('h-8 w-8', color)}
                   onClick={() => onAddNode(type)}
                 >
                   <Icon className="h-4 w-4" />
-                  <span className="text-xs flex-1">{label}</span>
-                  <kbd className="hidden group-hover:inline-flex px-1.5 py-0.5 text-[10px] font-mono bg-muted rounded">
-                    {shortcut}
-                  </kbd>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                Add {label} Node
+                <span className="block text-xs text-muted-foreground mt-0.5">Press '{shortcut}'</span>
+              </TooltipContent>
+            </Tooltip>
+          ))}
+          
+          <div className="w-full h-px bg-border my-0.5" />
+          
+          {nodeTools.slice(5).map(({ type, icon: Icon, label, color, shortcut }) => (
+            <Tooltip key={type}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn('h-8 w-8 opacity-70 hover:opacity-100', color)}
+                  onClick={() => onAddNode(type)}
+                >
+                  <Icon className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="right">

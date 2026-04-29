@@ -640,20 +640,6 @@ const ReasoningCanvasInner = forwardRef<HTMLDivElement, ReasoningCanvasProps>(fu
         isNew={!editingNode}
       />
 
-      {/* Canvas instructions */}
-      {nodes.length === 0 && (
-        <Panel position="top-center" className="!top-4">
-          <div className="bg-card/95 backdrop-blur border rounded-lg px-4 py-3 shadow-lg text-center max-w-md">
-            <p className="text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">Start mapping your reasoning!</span>
-              <br />
-              Use the toolbar on the left or press keys:
-              <br />
-              <span className="text-xs">S=Symptom, F=Finding, D=Diagnosis, T=Test, N=Note</span>
-            </p>
-          </div>
-        </Panel>
-      )}
 
       {/* Scratch Pad */}
       <ScratchPadPanel caseId={caseId} />

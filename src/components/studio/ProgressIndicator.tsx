@@ -55,11 +55,19 @@ export function ProgressIndicator({ nodes, connections, className }: ProgressInd
 
   if (nodes.length === 0) {
     return (
-      <Card className={cn('bg-muted/50', className)}>
+      <Card className={cn('bg-card/95 backdrop-blur-sm shadow-md', className)}>
         <CardContent className="py-3 px-4">
-          <div className="flex items-center gap-3 text-muted-foreground">
-            <Lightbulb className="h-4 w-4" />
-            <span className="text-sm">Start adding nodes to track your progress</span>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3 text-foreground font-medium">
+              <Lightbulb className="h-4 w-4 text-primary" />
+              <span className="text-sm">Start mapping your reasoning!</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Add your first node using the toolbar or keys:
+              <span className="inline-block ml-1">
+                <kbd className="font-mono bg-muted px-1 py-0.5 rounded border">S</kbd>ymptom, <kbd className="font-mono bg-muted px-1 py-0.5 rounded border">F</kbd>inding, <kbd className="font-mono bg-muted px-1 py-0.5 rounded border">D</kbd>iagnosis
+              </span>
+            </p>
           </div>
         </CardContent>
       </Card>

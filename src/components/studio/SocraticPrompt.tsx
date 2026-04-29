@@ -68,13 +68,40 @@ export function SocraticPrompt({
   const fetchPrompt = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('socratic-prompt', {
-        body: { caseContext, currentNodes, currentConnections, testsOrdered },
-      });
+      const { generateGeminiContent, parseJSONResponse } = await import('@/services/geminiService');
 
-      if (error) throw error;
-      if (data.error) throw new Error(data.error);
+      const systemPrompt = `You are a Socratic medical educator helping students develop metacognitive skills.
+Based on the student's current reasoning map, generate a thoughtful question that:
+- Encourages deeper thinking without giving away answers
+- Challenges assumptions appropriately
+- Promotes consideration of alternatives
+- Is specific to their current reasoning state
 
+Return a JSON object with:
+{
+  "question": "Your Socratic question",
+  "category": "hypothesis" | "evidence" | "alternatives" | "uncertainty" | "next-steps",
+  "explanation": "Brief internal note on why this question is valuable (not shown to student)"
+}`;
+
+      const diagnosisNodes = currentNodes.filter((n) => n.type === "diagnosis");
+      const symptomNodes = currentNodes.filter((n) => n.type === "symptom");
+
+      const userPrompt = `Case context:
+Specialty: ${caseContext.specialty}
+Presentation: ${caseContext.presentation}
+
+Student's current reasoning:
+- Symptoms/findings identified: ${symptomNodes.map((n) => n.label).join(", ") || "None yet"}
+- Diagnoses being considered: ${diagnosisNodes.map((n) => n.label).join(", ") || "None yet"}
+- Number of connections drawn: ${currentConnections}
+- Tests ordered: ${testsOrdered.join(", ") || "None yet"}
+
+Generate an appropriate Socratic question for this stage of reasoning. Return only valid JSON.`;
+
+      const content = await generateGeminiContent(systemPrompt, userPrompt);
+      const data = parseJSONResponse(content);
+      
       setPrompt(data);
     } catch (err) {
       console.error('Failed to fetch Socratic prompt:', err);
@@ -103,7 +130,7 @@ export function SocraticPrompt({
       <Button
         variant="outline"
         size="sm"
-        className="absolute bottom-4 left-1/2 -translate-x-1/2 gap-2 z-10"
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 gap-2 z-30"
         onClick={handleShow}
       >
         <Lightbulb className="h-4 w-4" />
@@ -120,7 +147,7 @@ export function SocraticPrompt({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.95 }}
           transition={{ duration: 0.2 }}
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 max-w-md w-[90%]"
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 max-w-md w-[90%]"
         >
           <Card
             className={cn(

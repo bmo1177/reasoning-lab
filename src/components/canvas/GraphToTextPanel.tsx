@@ -48,12 +48,27 @@ export function GraphToTextPanel({ nodes, edges, caseId }: GraphToTextPanelProps
     };
 
     try {
-      const { data, error } = await supabase.functions.invoke('graph-to-text', {
-        body: { graphData, narrativeType },
-      });
+      const { generateGeminiContent } = await import('@/services/geminiService');
+      const systemPrompts: Record<string, string> = {
+        clinical: `You are a clinical reasoning expert. Convert the provided reasoning graph into a structured clinical narrative. 
+Write in professional medical language. Include: patient presentation, key findings, diagnostic reasoning with supporting/contradicting evidence, and recommended workup. 
+Keep it concise but thorough. Do not invent information not present in the graph.`,
+        differential: `You are a clinical reasoning expert. Convert the provided reasoning graph into a structured differential diagnosis list.
+For each diagnosis, list supporting evidence and contradicting evidence from the graph. Rank by likelihood based on the connection strengths.
+Do not invent information not present in the graph.`,
+        summary: `You are a clinical reasoning expert. Convert the provided reasoning graph into a brief 2-3 sentence summary.
+Mention the key symptoms, primary diagnosis considerations, and critical tests. Be concise.
+Do not invent information not present in the graph.`,
+      };
 
-      if (error) throw error;
-      setNarrative(data.narrative || 'Failed to generate narrative.');
+      const prompt = `Here is a clinical reasoning graph:\n\nNodes:\n${JSON.stringify(graphData.nodes, null, 2)}\n\nConnections:\n${JSON.stringify(graphData.connections, null, 2)}\n\nConvert this into a ${narrativeType} narrative.`;
+
+      const content = await generateGeminiContent(
+        systemPrompts[narrativeType] || systemPrompts.clinical,
+        prompt
+      );
+      
+      setNarrative(content || 'Failed to generate narrative.');
     } catch (err) {
       console.error('Graph to text error:', err);
       // Fallback: generate locally

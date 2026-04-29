@@ -179,8 +179,9 @@ export function CasePanel({ clinicalCase, onTestOrdered }: CasePanelProps) {
         </div>
       </div>
 
-      <ScrollArea className="flex-1">
-        <div className="p-4 space-y-4">
+      <div className="flex-1 relative overflow-hidden">
+        <ScrollArea className="h-full">
+          <div className="p-4 space-y-4 pb-8">
           {activeTab === 'case' ? (
             <>
               {/* Patient info */}
@@ -265,16 +266,16 @@ export function CasePanel({ clinicalCase, onTestOrdered }: CasePanelProps) {
                 </Card>
               )}
 
-              {/* Key Findings Summary */}
-              <Card className="bg-amber-50/50 border-amber-200">
-                <CardHeader className="py-3 px-4">
-                  <CardTitle className="text-sm flex items-center gap-2 text-amber-800">
-                    <Lightbulb className="h-4 w-4" />
-                    Key Findings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="py-2 px-4">
-                  <ul className="space-y-1.5">
+              {/* Key Findings Summary - revealable */}
+              <RevealableCard
+                title="Key Findings"
+                icon={Lightbulb}
+                iconColor="text-amber-600"
+                revealed={revealedSections.has('keyFindings')}
+                onToggle={() => toggleSection('keyFindings')}
+                className="bg-amber-50/50 border-amber-200"
+              >
+                  <ul className="space-y-1.5 pt-2">
                     <li className="text-sm flex items-start gap-2">
                       <span className="text-amber-600 mt-0.5">•</span>
                       <span>{clinicalCase.patient.chiefComplaint}</span>
@@ -308,8 +309,7 @@ export function CasePanel({ clinicalCase, onTestOrdered }: CasePanelProps) {
                       </li>
                     )}
                   </ul>
-                </CardContent>
-              </Card>
+              </RevealableCard>
 
               {/* Presentation */}
               <Card>
@@ -356,16 +356,16 @@ export function CasePanel({ clinicalCase, onTestOrdered }: CasePanelProps) {
                 </RevealableCard>
               )}
 
-              {/* Learning Objectives */}
-              <Card className="bg-blue-50/50 border-blue-200">
-                <CardHeader className="py-3 px-4">
-                  <CardTitle className="text-sm flex items-center gap-2 text-blue-800">
-                    <Target className="h-4 w-4" />
-                    Learning Objectives
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="py-2 px-4">
-                  <ul className="space-y-1.5">
+              {/* Learning Objectives - revealable */}
+              <RevealableCard
+                title="Learning Objectives"
+                icon={Target}
+                iconColor="text-blue-800"
+                revealed={revealedSections.has('learningObjectives')}
+                onToggle={() => toggleSection('learningObjectives')}
+                className="bg-blue-50/50 border-blue-200"
+              >
+                  <ul className="space-y-1.5 pt-2">
                     {clinicalCase.learningObjectives.map((objective, idx) => (
                       <li key={idx} className="text-sm flex items-start gap-2 text-blue-900">
                         <span className="text-blue-600 mt-0.5">{idx + 1}.</span>
@@ -373,8 +373,7 @@ export function CasePanel({ clinicalCase, onTestOrdered }: CasePanelProps) {
                       </li>
                     ))}
                   </ul>
-                </CardContent>
-              </Card>
+              </RevealableCard>
 
               <Separator />
 
@@ -479,7 +478,9 @@ export function CasePanel({ clinicalCase, onTestOrdered }: CasePanelProps) {
             </div>
           )}
         </div>
-      </ScrollArea>
+        </ScrollArea>
+        <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-background to-transparent pointer-events-none" />
+      </div>
     </div>
   );
 }
@@ -534,6 +535,7 @@ function RevealableCard({
   revealed,
   onToggle,
   children,
+  className,
 }: {
   title: string;
   icon: React.ElementType;
@@ -541,10 +543,11 @@ function RevealableCard({
   revealed: boolean;
   onToggle: () => void;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
     <Collapsible open={revealed}>
-      <Card className={cn(!revealed && 'opacity-75')}>
+      <Card className={cn(!revealed && 'opacity-75', className)}>
         <CollapsibleTrigger asChild>
           <CardHeader className="py-3 px-4 cursor-pointer hover:bg-muted/50 transition-colors">
             <CardTitle className="text-sm flex items-center justify-between">
